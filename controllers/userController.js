@@ -2,7 +2,7 @@ import { Error } from "sequelize";
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 
-//GET USER
+// GET USER
 export const getUser = async (req, res) => {
   try {
     const users = await User.findAll();
@@ -19,7 +19,7 @@ export const getUser = async (req, res) => {
   }
 };
 
-//GET USER BY NIPP
+// GET USER BY NIPP
 export const getUserByNIPP = async (req, res) => {
   try {
     const user = await User.findOne({
@@ -45,7 +45,7 @@ export const getUserByNIPP = async (req, res) => {
   }
 };
 
-//UPDATE USER
+// UPDATE USER
 export const updatePenetapan = async (req, res) => {
   try {
     const { penetapan } = req.body;
@@ -83,7 +83,7 @@ export const updatePenetapan = async (req, res) => {
   }
 };
 
-//DELETE USER
+// DELETE USER
 export const deleteUser = async (req, res) => {
   try {
     const ifUserExist = await User.findOne({

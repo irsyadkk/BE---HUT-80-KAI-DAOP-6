@@ -1,4 +1,4 @@
-import { Sequelize, Error } from "sequelize";
+import { Error } from "sequelize";
 import Order from "../models/orderModel.js";
 import User from "../models/userModel.js";
 import Quota from "../models/quotaModel.js";
@@ -124,7 +124,7 @@ export const getOrder = async (req, res) => {
   }
 };
 
-//DELETE ORDER
+// DELETE ORDER
 export const deleteOrder = async (req, res) => {
   try {
     const ifOrderExist = await Order.findOne({

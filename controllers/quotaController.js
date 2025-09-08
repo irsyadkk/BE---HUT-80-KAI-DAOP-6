@@ -1,6 +1,5 @@
 import { Error } from "sequelize";
 import Quota from "../models/quotaModel.js";
-import jwt from "jsonwebtoken";
 
 //GET QUOTA
 export const getQuota = async (req, res) => {
@@ -31,14 +30,12 @@ export const addQuota = async (req, res) => {
     }
     const quota = await Quota.findOne({ where: { id: 1 } });
     if (!quota) {
-      // kalau belum ada, bikin dulu
       quota = await Quota.create({
         id: 1,
         quota: plus,
         total_quota: plus,
       });
     } else {
-      // kalau sudah ada, update
       const updatedQuota = (quota.quota ?? 0) + plus;
       const updatedTotal = (quota.total_quota ?? 0) + plus;
 
