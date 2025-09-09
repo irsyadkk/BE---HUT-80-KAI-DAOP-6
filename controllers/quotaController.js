@@ -56,7 +56,7 @@ export const addQuota = async (req, res) => {
     await t.commit();
     res.status(200).json({
       status: "Success",
-      message: "Quota Added",
+      message: `Quota Added By ${add} ! Current Quota ${updatedQuota}`,
       data: { updatedQuota, updatedTotal },
     });
   } catch (error) {
@@ -83,7 +83,9 @@ export const subQuota = async (req, res) => {
     }
 
     if (sub > quota.quota) {
-      throw makeError(`Quota Kurang dari ${sub} !`);
+      throw makeError(
+        `Quota Kurang dari ${sub} ! Quota Sekarang ${quota.quota}`
+      );
     }
 
     const updatedQuota = quota.quota - sub;
