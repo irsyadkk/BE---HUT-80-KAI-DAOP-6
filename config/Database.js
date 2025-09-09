@@ -12,6 +12,7 @@ const db = new Sequelize(DB_NAME, DB_USERNAME, DB_PASSWORD, {
   host: DB_HOST,
   dialect: "postgres",
   port: DB_PORT,
+  logging: false,
 });
 
 export default db;
