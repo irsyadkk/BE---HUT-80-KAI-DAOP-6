@@ -4,9 +4,9 @@ import { verifyToken } from "../middleware/verifyToken.js";
 import {
   getUser,
   getUserByNIPP,
-  updatePenetapan,
   loginHandler,
   logout,
+  addPenetapan,
 } from "../controllers/userController.js";
 import {
   addOrder,
@@ -14,7 +14,11 @@ import {
   getOrder,
   getOrderByNIPP,
 } from "../controllers/orderController.js";
-import { getQuota, addQuota } from "../controllers/quotaController.js";
+import {
+  getQuota,
+  addQuota,
+  subQuota,
+} from "../controllers/quotaController.js";
 
 const router = express.Router();
 // REFRESH TOKEN
@@ -27,8 +31,7 @@ router.delete("/logout", logout);
 // USERS
 router.get("/users", verifyToken, getUser);
 router.get("/users/:nipp", verifyToken, getUserByNIPP);
-// PATCH INI HARUS VALIADASI LAGI ? GIMANA KALO DIA UDAH ORDER TAPI PENETAPAN DIKURANGIN ?
-router.patch("/users/:nipp", verifyToken, updatePenetapan);
+router.patch("/users/:nipp", verifyToken, addPenetapan);
 
 // ORDER
 router.post("/order", verifyToken, addOrder);
@@ -38,6 +41,7 @@ router.delete("/order/:nipp", verifyToken, deleteOrder);
 
 // QUOTA
 router.get("/quota", verifyToken, getQuota);
-router.patch("/quota", verifyToken, addQuota);
+router.patch("/addquota", verifyToken, addQuota);
+router.patch("/subquota", verifyToken, subQuota);
 
 export default router;

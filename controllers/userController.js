@@ -1,6 +1,7 @@
 import { Error } from "sequelize";
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import db from "../config/Database.js";
 
 const makeError = (msg, code = 400) => {
   const error = new Error(msg);
@@ -49,35 +50,42 @@ export const getUserByNIPP = async (req, res) => {
   }
 };
 
-// UPDATE USER
-export const updatePenetapan = async (req, res) => {
+// ADD USER PENETAPAN/JATAH BY NIPP
+export const addPenetapan = async (req, res) => {
+  const t = await db.transaction();
   try {
-    const { penetapan } = req.body;
+    const { add } = req.body;
     const nipp = req.params.nipp;
-    if (!penetapan) {
-      throw makeError("Penetapan Field Cannot be Empty !", 400);
+    if (!add) {
+      throw makeError("Add Field Cannot be Empty !", 400);
     }
 
     const ifUserExist = await User.findOne({
       where: { nipp: nipp },
+      transaction: t,
     });
-
     if (!ifUserExist) {
       throw makeError("User Not Found !", 404);
     }
 
+    const updatedPenetapan = ifUserExist.penetapan + add;
+
     await User.update(
-      { penetapan: penetapan },
+      { penetapan: updatedPenetapan },
       {
         where: { nipp: nipp },
+        transaction: t,
       }
     );
 
+    await t.commit();
     res.status(200).json({
       status: "Success",
-      message: "User Updated",
+      message: `${nipp} Penetapan Added By ${add}`,
+      data: { nipp, updatedPenetapan },
     });
   } catch (error) {
+    await t.rollback();
     res.status(error.statusCode || 500).json({
       status: "Error",
       message: error.message,
@@ -87,21 +95,26 @@ export const updatePenetapan = async (req, res) => {
 
 // DELETE USER
 export const deleteUser = async (req, res) => {
+  const t = await db.transaction();
   try {
     const nipp = req.params.nipp;
     const ifUserExist = await User.findOne({
       where: { nipp: nipp },
+      transaction: t,
     });
     if (!ifUserExist) {
       throw makeError("User Not Found !", 404);
     }
 
-    await User.destroy({ where: { nipp: nipp } });
+    await User.destroy({ where: { nipp: nipp }, transaction: t });
+
+    await t.commit();
     res.status(200).json({
       status: "Success",
       message: "User Deleted",
     });
   } catch (error) {
+    await t.rollback();
     res.status(error.statusCode || 500).json({
       status: "Error",
       message: error.message,
