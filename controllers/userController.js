@@ -2,6 +2,12 @@ import { Error } from "sequelize";
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 
+const makeError = (msg, code = 400) => {
+  const error = new Error(msg);
+  error.statusCode = code;
+  return error;
+};
+
 // GET USER
 export const getUser = async (req, res) => {
   try {
@@ -28,9 +34,7 @@ export const getUserByNIPP = async (req, res) => {
       },
     });
     if (!user) {
-      const error = new Error("User tidak ditemukan !");
-      error.statusCode = 400;
-      throw error;
+      throw makeError("User Not Found !", 404);
     }
     res.status(200).json({
       status: "Success",
@@ -49,25 +53,23 @@ export const getUserByNIPP = async (req, res) => {
 export const updatePenetapan = async (req, res) => {
   try {
     const { penetapan } = req.body;
-    const ifUserExist = await User.findOne({
-      where: { nipp: req.params.nipp },
-    });
+    const nipp = req.params.nipp;
     if (!penetapan) {
-      const msg = `${"Penetapan"} field cannot be empty !`;
-      const error = new Error(msg);
-      error.statusCode = 401;
-      throw error;
+      throw makeError("Penetapan Field Cannot be Empty !", 400);
     }
+
+    const ifUserExist = await User.findOne({
+      where: { nipp: nipp },
+    });
+
     if (!ifUserExist) {
-      const error = new Error("User not found !");
-      error.statusCode = 400;
-      throw error;
+      throw makeError("User Not Found !", 404);
     }
 
     await User.update(
       { penetapan: penetapan },
       {
-        where: { nipp: req.params.nipp },
+        where: { nipp: nipp },
       }
     );
 
@@ -86,16 +88,15 @@ export const updatePenetapan = async (req, res) => {
 // DELETE USER
 export const deleteUser = async (req, res) => {
   try {
+    const nipp = req.params.nipp;
     const ifUserExist = await User.findOne({
-      where: { nipp: req.params.nipp },
+      where: { nipp: nipp },
     });
     if (!ifUserExist) {
-      const error = new Error("User not found !");
-      error.statusCode = 404;
-      throw error;
+      throw makeError("User Not Found !", 404);
     }
 
-    await User.destroy({ where: { nipp: req.params.nipp } });
+    await User.destroy({ where: { nipp: nipp } });
     res.status(200).json({
       status: "Success",
       message: "User Deleted",
@@ -116,10 +117,7 @@ export async function loginHandler(req, res) {
     const user = await User.findOne({ where: { nipp } });
 
     if (!user) {
-      return res.status(400).json({
-        status: "Failed",
-        message: "User tidak ditemukan",
-      });
+      throw makeError("User Not Found !", 404);
     }
 
     const userPlain = user.toJSON();
@@ -146,7 +144,7 @@ export async function loginHandler(req, res) {
       httpOnly: true,
       sameSite: "Strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
-      secure: false, // kalau pakai HTTPS
+      secure: false, // kalau pakai HTTP
     });
 
     res.status(200).json({

@@ -12,6 +12,7 @@ import {
   addOrder,
   deleteOrder,
   getOrder,
+  getOrderByNIPP,
 } from "../controllers/orderController.js";
 import { getQuota, addQuota } from "../controllers/quotaController.js";
 
@@ -32,6 +33,7 @@ router.patch("/users/:nipp", verifyToken, updatePenetapan);
 // ORDER
 router.post("/order", verifyToken, addOrder);
 router.get("/order", verifyToken, getOrder);
+router.get("/order/:nipp", verifyToken, getOrderByNIPP);
 router.delete("/order/:nipp", verifyToken, deleteOrder);
 
 // QUOTA

@@ -29,7 +29,7 @@ export const addOrder = async (req, res) => {
         ? "Nama field cannot be empty !"
         : !Array.isArray(nama)
         ? "Nama must be an array !"
-        : "Nama Must be Array of String & Cannot be Empty !";
+        : "Each Element in Nama Must be String & Cannot be Empty !";
       throw makeError(msg, 400);
     }
 
@@ -147,6 +147,28 @@ export const getOrder = async (req, res) => {
       status: "Success",
       message: "Orders Retrieved",
       data: orders,
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      status: "Error...",
+      message: error.message,
+    });
+  }
+};
+
+// GET ORDER BY NIPP
+export const getOrderByNIPP = async (req, res) => {
+  try {
+    const nipp = req.params.nipp;
+    const order = await Order.findOne({ where: { nipp: nipp } });
+    if (!order) {
+      throw makeError("Order Not Found !", 404);
+    }
+
+    res.status(200).json({
+      status: "Success",
+      message: "Order Retrieved",
+      data: order,
     });
   } catch (error) {
     res.status(error.statusCode || 500).json({
