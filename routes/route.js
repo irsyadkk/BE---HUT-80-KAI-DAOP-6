@@ -13,6 +13,7 @@ import {
   deleteOrder,
   getOrder,
   getOrderByNIPP,
+  editOrder,
 } from "../controllers/orderController.js";
 import {
   getQuota,
@@ -38,6 +39,8 @@ router.post("/order", verifyToken, addOrder);
 router.get("/order", verifyToken, getOrder);
 router.get("/order/:nipp", verifyToken, getOrderByNIPP);
 router.delete("/order/:nipp", verifyToken, deleteOrder);
+router.put("/order/:nipp", verifyToken, editOrder);
+
 
 // QUOTA
 router.get("/quota", verifyToken, getQuota);
