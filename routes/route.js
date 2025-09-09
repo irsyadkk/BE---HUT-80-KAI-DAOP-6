@@ -41,7 +41,6 @@ router.get("/order/:nipp", verifyToken, getOrderByNIPP);
 router.delete("/order/:nipp", verifyToken, deleteOrder);
 router.put("/order/:nipp", verifyToken, editOrder);
 
-
 // QUOTA
 router.get("/quota", verifyToken, getQuota);
 router.patch("/addquota", verifyToken, addQuota);

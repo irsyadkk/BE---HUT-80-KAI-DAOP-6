@@ -10,7 +10,6 @@ const makeError = (msg, code = 400) => {
   return error;
 };
 
-
 // ADD ORDER
 export const addOrder = async (req, res) => {
   const t = await db.transaction();
@@ -187,7 +186,11 @@ export const editOrder = async (req, res) => {
     const { nama } = req.body;
 
     // VALIDASI INPUT
-    if (!nama || !Array.isArray(nama) || nama.some(n => typeof n !== "string" || !n.trim())) {
+    if (
+      !nama ||
+      !Array.isArray(nama) ||
+      nama.some((n) => typeof n !== "string" || !n.trim())
+    ) {
       const msg = !nama
         ? "Nama field cannot be empty !"
         : !Array.isArray(nama)
@@ -218,7 +221,10 @@ export const editOrder = async (req, res) => {
     // VALIDASI PENAMBAHAN
     if (diff > 0) {
       if (user.penetapan < diff) {
-        throw makeError(`Jatah Kamu Tidak Mencukupi. Tersisa ${user.penetapan}`, 400);
+        throw makeError(
+          `Jatah Kamu Tidak Mencukupi. Tersisa ${user.penetapan}`,
+          400
+        );
       }
       if (quota.quota < diff) {
         throw makeError(`Quota Tidak Mencukupi. Tersisa ${quota.quota}`, 400);
@@ -251,26 +257,22 @@ export const editOrder = async (req, res) => {
     const qrData = JSON.stringify({ nipp, nama });
     const qrCode = await QRCode.toDataURL(qrData);
 
-    await order.update(
-      { nama, qr: qrCode },
-      { transaction: t }
-    );
+    await order.update({ nama, qr: qrCode }, { transaction: t });
 
     await t.commit();
     res.status(200).json({
       status: "Success",
-      message: "Order Updated",
+      message: `Order ${nipp} Updated`,
       data: { nipp, nama, updatedPenetapan, updatedQuota },
     });
   } catch (error) {
     await t.rollback();
     res.status(error.statusCode || 500).json({
-      status: "Error",
+      status: "Error...",
       message: error.message,
     });
   }
 };
-
 
 // DELETE ORDER
 export const deleteOrder = async (req, res) => {
